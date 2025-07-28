@@ -1,0 +1,6 @@
+@import url("https://fonts.googleapis.com/css?family=montserrat ");
+@import "tailwindcss";
+
+@theme {
+  --font-montserrat: montserrat;
+}
