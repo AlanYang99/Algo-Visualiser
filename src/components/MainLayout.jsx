@@ -1,16 +1,17 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useResizeDetector } from "react-resize-detector";
+import { useSelector, useDispatch } from "react-redux";
 import * as d3 from "d3";
+import { setData } from "../redux/sortingActions";
 
 const GroupedRects = ({ data, width = 500, height = 300 }) => {
   const svgRef = useRef();
 
   useEffect(() => {
-    console.log(width);
-    console.log("inside method;" + data);
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove(); // Clear previous render
 
+    // console.log(updateNumbers);
     const group = svg
       .selectAll("g")
       .data(data)
@@ -65,21 +66,19 @@ const GroupedRects = ({ data, width = 500, height = 300 }) => {
 };
 
 export default function MainLayout() {
-  const [values, setValues] = useState("1,2,3,4");
-  const [numbers, setNumbers] = useState([10, 15, 20]);
+  const [values, setValues] = useState("5,6,9");
   const [error, setError] = useState(false);
   const { width, height, ref } = useResizeDetector();
-  const divRef = useRef(null);
 
-  useEffect(() => {
-    if (width) {
-      console.log("Width changed:", width);
-      console.log("Height changed:", height);
-    }
-  }, [width, height]);
+  const numbers = useSelector((state) => state.data);
+  const dispatch = useDispatch();
 
-  console.log(width);
-  console.log(height);
+  console.log("rerendered");
+  // useEffect(() => {
+  //   if (width) {
+  //   }
+  // }, [width, height]);
+
   // useEffect(() => {
   //   if (divRef.current) {
   //     setHeight(divRef.current.offsetHeight);
@@ -99,10 +98,10 @@ export default function MainLayout() {
   };
 
   const updateValues = (values) => {
-    console.log(values);
     if (validation(values)) {
       const numArray = values.trim().split(",").map(Number);
-      setNumbers(numArray);
+      dispatch(setData(numArray));
+      // setNumbers(numArray);
     }
   };
 
@@ -113,38 +112,13 @@ export default function MainLayout() {
     for (i = 0; i < numNumbers; i++) {
       numArray.push(getRandomInt(45));
     }
-    setNumbers(numArray);
+    dispatch(setData(numArray));
   };
 
   return (
     <div className="flex-1 bg-gray-100 mt-13.5">
       <div ref={ref} className="h-17/24 min-w-full flex-1">
         <GroupedRects data={numbers} width={width} height={height} />
-        {/* <svg className="h-full w-full justify-center-safe flex items-center">
-          <g transform={`scale(1, -1) translate(100,${-height / 2})`}>
-            <rect
-              width="40"
-              height="80"
-              r="40"
-              className="fill-green-500"
-            ></rect>
-          </g>
-          <g transform={`scale(1, -1) translate(150,${-height / 2})`}>
-            <rect
-              width="40"
-              height="100"
-              r="40"
-              className="fill-green-500"
-            ></rect>
-            <text
-              className="flex rotate-x-180 font-semibold"
-              textAnchor="middle"
-              x="21"
-              y="-10"
-              dy=".35em"
-            ></text>
-          </g>
-        </svg> */}
       </div>
       <div className="flex items-left space-x-2 mx-auto p-4 bg-gray-300">
         <label

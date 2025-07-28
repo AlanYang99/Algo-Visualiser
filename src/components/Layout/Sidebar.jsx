@@ -1,39 +1,11 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faSort,
-  faProjectDiagram,
-  faRoute,
-  faCog,
-  faArrowLeft,
-  faArrowRight,
-} from "@fortawesome/free-solid-svg-icons";
-import SidebarItemList from "./SidebarItemList";
+import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import SidebarNav from "../SidebarNav";
+import { getSideBarNavigationItems } from "../../utils/utils";
 
 export default function Sidebar() {
   const [collapsedSideBar, setCollapsedSideBar] = useState(false);
-  const navItems = [
-    {
-      label: "Sorting",
-      topics: ["Bubble Sort", "Quick Sort", "Merge Sort"],
-      icon: faSort,
-    },
-    {
-      label: "Graphs",
-      topics: ["Bubble Sort", "Quick Sort", "Merge Sort"],
-      icon: faProjectDiagram,
-    },
-    {
-      label: "Pathfinding",
-      topics: ["Bubble Sort", "Quick Sort", "Merge Sort"],
-      icon: faRoute,
-    },
-    {
-      label: "Settings",
-      topics: ["Bubble Sort", "Quick Sort", "Merge Sort"],
-      icon: faCog,
-    },
-  ];
 
   return (
     <aside
@@ -58,8 +30,8 @@ export default function Sidebar() {
           </button>
         </div>
         <nav className="space-y-2 px-2">
-          {navItems.map(({ label, topics, icon }) => (
-            <SidebarItemList
+          {getSideBarNavigationItems().map(({ label, topics, icon }) => (
+            <SidebarNav
               key={label}
               category={label}
               items={topics}

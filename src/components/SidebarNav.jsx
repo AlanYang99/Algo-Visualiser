@@ -1,7 +1,7 @@
-import SidebarItem from "./SidebarItem";
 import { faCaretDown, faCaretUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function SidebarItemList({
   category,
@@ -11,6 +11,7 @@ export default function SidebarItemList({
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
+  console.log(items);
   useEffect(() => {
     if (text_visibility === false) {
       setIsOpen(text_visibility);
@@ -54,7 +55,21 @@ export default function SidebarItemList({
           </li>
           {isOpen &&
             text_visibility &&
-            items?.map((item) => <SidebarItem key={item} Algorithm={item} />)}
+            items?.map((item) => (
+              <li>
+                {/* change link  */}
+                <div
+                  key={item.topic}
+                  className={`flex items-center p-1 rounded cursor-pointer transition-all duration-300 bg-gray-900 hover:bg-blue-600`}
+                >
+                  <Link to={item.link} className="">
+                    <span className="ml-10 text-sm font-medium transition-opacity duration-200 opacity-100">
+                      {item.topic}
+                    </span>
+                  </Link>
+                </div>
+              </li>
+            ))}
         </ul>
       </>
     );

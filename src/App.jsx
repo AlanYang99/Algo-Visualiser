@@ -1,7 +1,7 @@
 import "./App.css";
-import Header from "./components/Header";
-import MainLayout from "./components/MainLayout";
-import Sidebar from "./components/Sidebar";
+import Header from "./components/Layout/Header";
+import Sidebar from "./components/Layout/Sidebar";
+import { Outlet } from "react-router-dom";
 
 function App() {
   return (
@@ -9,7 +9,7 @@ function App() {
       <div className="flex h-screen">
         <Header />
         <Sidebar />
-        <MainLayout />
+        <Outlet />
       </div>
     </>
   );
