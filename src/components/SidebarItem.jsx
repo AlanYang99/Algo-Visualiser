@@ -19,28 +19,3 @@ export default function SidebarItem({ Algorithm, icon }) {
     </li>
   );
 }
-
-// <li>
-//   <div
-//     key={category}
-//     className={`flex items-center p-2 rounded cursor-pointer transition-all bg-gray-600`}
-//   >
-//     <FontAwesomeIcon icon={faCaretDown} className="text-white text-lg" />
-//     <span
-//       className={`ml-3 text-sm font-medium transition-opacity duration-200 opacity-100`}
-//     >
-//       {category}
-//     </span>
-//     {isOpen ? (
-//       <FontAwesomeIcon
-//         className="ml-auto text-white text-lg"
-//         icon={faCaretUp}
-//       />
-//     ) : (
-//       <FontAwesomeIcon
-//         className="ml-auto text-white text-lg"
-//         icon={faCaretDown}
-//       />
-//     )}
-//   </div>
-// </li>;
