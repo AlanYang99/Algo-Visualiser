@@ -11,7 +11,6 @@ export default function SidebarItemList({
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
-  console.log(items);
   useEffect(() => {
     if (text_visibility === false) {
       setIsOpen(text_visibility);

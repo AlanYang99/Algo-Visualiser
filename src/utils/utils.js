@@ -48,10 +48,14 @@ export const getSideBarNavigationItems = () => {
 
 export const randomiseNumbers = () => {
   const numNumbers = getRandomInt(14) + 1;
-  Array.from({ length: numNumbers }, () => Math.ceil(Math.random * 20) + 1);
+  return Array.from({ length: numNumbers }, () => getRandomInt(30) + 1);
 };
 
 export const validateInput = (values) => {
   const regex = /^[0-9]+(,[0-9]+)*$/;
   return values.match(regex) ? true : false;
+};
+
+const getRandomInt = (max) => {
+  return Math.floor(Math.random() * max);
 };

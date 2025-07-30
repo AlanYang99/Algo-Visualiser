@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { randomiseNumbers, validateInput } from "../utils/utils";
-import { setData } from "../redux/sortingActions";
+import { setData, setPlaying } from "../redux/sortingActions";
 import { toast } from "react-toastify";
 
 export default function DataInputField() {
@@ -32,11 +32,11 @@ export default function DataInputField() {
           onClick={() => {
             if (validateInput(inputData)) {
               const numArray = inputData.trim().split(",").map(Number);
-              dispatch(setInputData(numArray));
+              dispatch(setData(numArray));
             } else {
               toast.error("Something went wrong.", {
                 style: {
-                  background: "#b91c1c", // red-700
+                  background: "#b91c1c",
                   color: "#fff",
                 },
               });
@@ -57,6 +57,9 @@ export default function DataInputField() {
         <button
           type="button"
           className="px-4 py-2 text-sm font-medium text-gray-900 bg-transparent border border-gray-900 rounded-e-lg hover:bg-gray-900 hover:text-white focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-900 focus:text-white dark:border-white dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:bg-gray-700"
+          onClick={() => {
+            dispatch(setPlaying());
+          }}
         >
           Sort
         </button>

@@ -1,11 +1,13 @@
 import React from "react";
-import DataInputField from "../DataInputField";
 import { Outlet } from "react-router-dom";
+import DataInputField from "./DataInputField";
 
-export default function MainLayout() {
+export default function Algorithm() {
   return (
     <div className="flex-1 bg-gray-100 mt-13.5">
-      <Outlet />
+      <div className="h-17/24 min-w-full flex-1">
+        <Outlet />
+      </div>
       <DataInputField />
     </div>
   );
