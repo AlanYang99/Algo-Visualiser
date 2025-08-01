@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { randomiseNumbers, validateInput } from "../utils/utils";
-import { setData, setPlaying } from "../redux/sortingActions";
+import { setCompleted, setData, setPlaying } from "../redux/sortingActions";
 import { toast } from "react-toastify";
 
 export default function DataInputField() {
@@ -33,6 +33,7 @@ export default function DataInputField() {
             if (validateInput(inputData)) {
               const numArray = inputData.trim().split(",").map(Number);
               dispatch(setData(numArray));
+              dispatch(setCompleted(false));
             } else {
               toast.error("Something went wrong.", {
                 style: {
@@ -50,6 +51,7 @@ export default function DataInputField() {
           className="px-4 py-2 text-sm font-medium text-gray-900 bg-transparent border-t border-b border-gray-900 hover:bg-gray-900 hover:text-white focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-900 focus:text-white dark:border-white dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:bg-gray-700"
           onClick={() => {
             dispatch(setData(randomiseNumbers()));
+            dispatch(setCompleted(false));
           }}
         >
           Randomise
