@@ -9,83 +9,101 @@ import {
   setCompleted,
   setHighlightLine,
   selectCompleted,
+  selectSpeed,
+  setData,
+  setStepDescription,
 } from "../../redux/sortingActions";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import { initialRender, swap, highlight, pause } from "../../utils/render";
-// import { bubbleSort } from "../../utils/render";
 
 export default function BubbleSort() {
-  const { width, height, ref } = useResizeDetector();
+  const { width = 800, height = 400, ref } = useResizeDetector(); // fallback values
   const data = [...useSelector(selectData)];
   const playing = useSelector(selectPlaying);
   const previousStatus = useSelector(selectPreviousPlaying);
   const completed = useSelector(selectCompleted);
+  const speed = useSelector(selectSpeed);
   const dispatch = useDispatch();
-  var svg = d3.select("#animation");
+  const svgRef = useRef(null);
 
   const barWidth = 50;
-  console.log(data);
-  const scaleY = d3
-    .scaleLinear()
-    .domain([0, d3.max(data)])
-    .range([0, height - 40]);
-  const scaleX = (i) => i * barWidth + width / 2 - 25 * data.length;
+
+  const scaleY = useMemo(() => {
+    return d3
+      .scaleLinear()
+      .domain([0, d3.max(data)])
+      .range([0, height - 40]);
+  }, [data, height]);
+
+  const scaleX = useMemo(() => {
+    return (i) => i * barWidth + width / 2 - 25 * data.length;
+  }, [data.length, width]);
+
+  const svg = useMemo(() => {
+    return d3.select(svgRef.current);
+  }, [svgRef.current]);
+
+  const bubbleSort = async (svg, data, dispatch) => {
+    const n = data.length;
+    for (let i = 0; i < n; i++) {
+      dispatch(setHighlightLine(1));
+      await pause(speed);
+
+      for (let j = 0; j < n - i - 1; j++) {
+        dispatch(setHighlightLine(2));
+        await pause(speed);
+
+        highlight(svg, "orange", j, j + 1);
+        dispatch(setHighlightLine(3));
+        dispatch(setStepDescription(`Comparing index ${j} and index ${j + 1}`));
+
+        await pause(speed);
+
+        if (data[j] > data[j + 1]) {
+          await swap(data, j, j + 1, svg, scaleX, speed);
+          dispatch(setHighlightLine(4));
+          dispatch(
+            setStepDescription(
+              `index ${j} (${data[j]}) is greater than index ${j + 1} (${
+                data[j + 1]
+              }), so they are swapped`
+            )
+          );
+
+          await pause(speed);
+        }
+
+        highlight(svg, "steelblue", j, j + 1);
+        await pause(speed);
+      }
+
+      highlight(svg, "green", n - i - 1);
+      await pause(speed);
+    }
+
+    dispatch(setPlaying());
+    dispatch(setCompleted(true));
+  };
 
   useEffect(() => {
-    svg = d3.select("#animation");
+    if (!svgRef.current) {
+      return;
+    }
     if (previousStatus === true && playing === false && completed === false) {
-      initialRender(data, height, scaleY);
+      initialRender(data, height, scaleX, scaleY);
     } else if (
       previousStatus === true &&
       playing === false &&
       completed === true
     ) {
+      // Do nothing
     } else {
-      initialRender(data, height, scaleY);
+      initialRender(data, height, scaleX, scaleY);
       if (playing === true) {
         bubbleSort(svg, data, dispatch);
       }
     }
-  }, [data, playing]);
+  }, [data, playing, scaleX, scaleY, svg]);
 
-  // Highlight, compare, swap, and mark sorted
-
-  return <svg ref={ref} id="animation" className="w-full h-full" />;
+  return <svg ref={svgRef} id="animation" className="w-full h-full" />;
 }
-
-const bubbleSort = async (svg, data, dispatch) => {
-  const n = data.length;
-
-  for (let i = 0; i < n; i++) {
-    dispatch(setHighlightLine(1));
-    await pause(300);
-
-    for (let j = 0; j < n - i - 1; j++) {
-      dispatch(setHighlightLine(2));
-      await pause(300);
-
-      // highlight pair
-      highlight(svg, "orange", j, j + 1);
-      dispatch(setHighlightLine(3));
-      await pause(300);
-
-      // swap if out of order
-      if (data[j] > data[j + 1]) {
-        await swap(data, j, j + 1, svg);
-        dispatch(setHighlightLine(4));
-        await pause(400);
-      }
-
-      // remove highlight
-      highlight(svg, "steelblue", j, j + 1);
-      await pause(300);
-    }
-
-    // mark the last bar of this pass as sorted
-    highlight(svg, "green", n - i - 1);
-    await pause(300);
-  }
-
-  dispatch(setPlaying());
-  dispatch(setCompleted(true));
-};

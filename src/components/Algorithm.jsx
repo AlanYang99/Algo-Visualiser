@@ -1,10 +1,11 @@
-import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import DataInputField from "./DataInputField";
 import ReadOnlyCodeBlock from "./ReadOnlyCodeBlock";
+import RangeSlider from "./RangeSlider";
+import StepDescription from "./StepDescription";
+import MediaFunction from "./MediaFunction";
 
 export default function Algorithm() {
-  const [value, setValue] = useState(100);
   const bubbleSortCode = `function bubbleSort(arr) {
     for (let i = 0; i < arr.length; i++) {
       for (let j = 0; j < arr.length - i - 1; j++) {
@@ -21,22 +22,15 @@ export default function Algorithm() {
         <Outlet />
       </div>
       <DataInputField />
-      <div class="grid grid-cols-2 gap-4 items-start">
-        <div className="flex items-center gap-4 ml-4">
-          <input
-            className="justify-start accent-green-300 w-[calc(40vw-10px)] ml-4"
-            type="range"
-            min="1"
-            max="400"
-            value={value}
-            id="myRange"
-            onChange={(event) => {
-              setValue(Number(event.target.value));
-            }}
-          ></input>
-          <span className="text-sm font-mono text-cyan-700">
-            {value / 100}x
-          </span>
+      <div className="grid grid-cols-2 items-start">
+        <div className="grid grid-rows-2 h-full bg-sky-300">
+          <StepDescription />
+          <div className="border-b border-dashed bg-fuchsia-400 border-black min-h-2/5">
+            <MediaFunction />
+          </div>
+          <div className="grid grid-rows-2 w-full bg-amber-300 border-b border-black min-h-1/5">
+            <RangeSlider />
+          </div>
         </div>
         <ReadOnlyCodeBlock code={bubbleSortCode} />
       </div>

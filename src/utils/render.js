@@ -18,7 +18,7 @@ export const bubbleSort = (arr) => {
   return dataCopy;
 };
 
-export const initialRender = (arr, height, scaleY) => {
+export const initialRender = (arr, height, scaleX, scaleY) => {
   const svg = d3.select("#animation");
 
   svg.selectAll("*").remove(); // Clear previous render
@@ -26,16 +26,33 @@ export const initialRender = (arr, height, scaleY) => {
 
   const groups = svg.selectAll("g.bar-group").data(arr, (_, i) => i);
 
+  const indexes = svg.selectAll("g.bar-group-index").data(arr, (_, i) => i);
+
+  const gIndexes = groups
+    .enter()
+    .append("g")
+    .attr("class", "bar-group-index")
+    .attr("transform", (d, i) => `translate(${scaleX(i)}, ${scaleY(d) + 30})`)
+    .attr("data-index", (_, i) => i);
+
+  gIndexes
+    .append("text")
+    .attr("x", (barWidth - 5) / 2)
+    .attr("y", (d) => height - scaleY(d) - 35)
+    .text((_, i) => i)
+    .style("text-anchor", "middle")
+    .style("font-size", "12px")
+    .style("fill", "darkOrange");
+
   const gEnter = groups
     .enter()
     .append("g")
     .attr("class", "bar-group")
-    .attr("transform", (_, i) => `translate(${i * barWidth},0)`)
+    .attr("transform", (_, i) => `translate(${scaleX(i)},0)`)
     .attr("data-index", (_, i) => i);
 
   gEnter
     .append("rect")
-    .attr("class", "bg-green-400")
     .attr("width", barWidth - 5)
     .attr("height", (d) => scaleY(d))
     .attr("y", (d) => height - scaleY(d) - 20)
@@ -50,11 +67,12 @@ export const initialRender = (arr, height, scaleY) => {
     .text((d) => d)
     .style("text-anchor", "middle")
     .style("fill", "#333")
-    .style("font-size", "12px");
+    .style("font-size", "12px")
+    .style("fill", "green");
 };
 
 // Swap two bars at indices i and j
-export const swap = (arr, i, j, svg) => {
+export const swap = (arr, i, j, svg, scaleX, pauseTime) => {
   const barWidth = 50;
   // swap data values
   [arr[i], arr[j]] = [arr[j], arr[i]];
@@ -67,12 +85,12 @@ export const swap = (arr, i, j, svg) => {
   gJ.attr("data-index", i);
 
   gI.transition()
-    .duration(400)
-    .attr("transform", `translate(${j * barWidth},0)`);
+    .duration(pauseTime)
+    .attr("transform", `translate(${scaleX(j)},0)`);
 
   gJ.transition()
-    .duration(400)
-    .attr("transform", `translate(${i * barWidth},0)`);
+    .duration(pauseTime)
+    .attr("transform", `translate(${scaleX(i)},0)`);
 };
 
 export const highlight = (svg, color, ...i) => {
