@@ -14,7 +14,7 @@ import {
   setStepDescription,
 } from "../../redux/sortingActions";
 import { useEffect, useRef, useMemo } from "react";
-import { initialRender, swap, highlight, pause } from "../../utils/render";
+import { render, swap, highlight, pause } from "../../utils/render";
 
 export default function BubbleSort() {
   const { width = 800, height = 400, ref } = useResizeDetector(); // fallback values
@@ -44,6 +44,7 @@ export default function BubbleSort() {
   }, [svgRef.current]);
 
   const bubbleSort = async (svg, data, dispatch) => {
+    console.log("hello");
     const n = data.length;
     for (let i = 0; i < n; i++) {
       dispatch(setHighlightLine(1));
@@ -53,7 +54,7 @@ export default function BubbleSort() {
         dispatch(setHighlightLine(2));
         await pause(speed);
 
-        highlight(svg, "orange", j, j + 1);
+        await highlight(svg, [j, j + 1], "orange");
         dispatch(setHighlightLine(3));
         dispatch(setStepDescription(`Comparing index ${j} and index ${j + 1}`));
 
@@ -73,11 +74,11 @@ export default function BubbleSort() {
           await pause(speed);
         }
 
-        highlight(svg, "steelblue", j, j + 1);
+        await highlight(svg, [j, j + 1], "steelblue");
         await pause(speed);
       }
 
-      highlight(svg, "green", n - i - 1);
+      await highlight(svg, [n - i - 1], "green");
       await pause(speed);
     }
 
@@ -90,7 +91,7 @@ export default function BubbleSort() {
       return;
     }
     if (previousStatus === true && playing === false && completed === false) {
-      initialRender(data, height, scaleX, scaleY);
+      render(data, height, scaleX, scaleY);
     } else if (
       previousStatus === true &&
       playing === false &&
@@ -98,7 +99,7 @@ export default function BubbleSort() {
     ) {
       // Do nothing
     } else {
-      initialRender(data, height, scaleX, scaleY);
+      render(data, height, scaleX, scaleY);
       if (playing === true) {
         bubbleSort(svg, data, dispatch);
       }

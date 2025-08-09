@@ -7,7 +7,7 @@ const initialState = {
   previousPlaying: null,
   completed: false,
   highlightLine: null,
-  speed: 100,
+  speed: 200,
   stepDescription: "No actions currently",
 };
 

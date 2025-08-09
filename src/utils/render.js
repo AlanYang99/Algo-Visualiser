@@ -18,64 +18,74 @@ export const bubbleSort = (arr) => {
   return dataCopy;
 };
 
-export const initialRender = (arr, height, scaleX, scaleY) => {
+export const render = (arr, height, scaleX, scaleY) => {
   const svg = d3.select("#animation");
-
   svg.selectAll("*").remove(); // Clear previous render
-  const barWidth = 50;
 
-  const groups = svg.selectAll("g.bar-group").data(arr, (_, i) => i);
+  // Layout constants
+  const layout = {
+    barWidth: 50,
+    barPadding: 5,
+    labelOffset: 25,
+    indexOffset: 30,
+    barYOffset: 20,
+  };
 
-  const indexes = svg.selectAll("g.bar-group-index").data(arr, (_, i) => i);
-
-  const gIndexes = groups
-    .enter()
-    .append("g")
+  // Index label groups
+  const indexGroups = svg
+    .selectAll("g.bar-group-index")
+    .data(arr, (_, i) => i)
+    .join("g")
     .attr("class", "bar-group-index")
-    .attr("transform", (d, i) => `translate(${scaleX(i)}, ${scaleY(d) + 30})`)
+    .attr(
+      "transform",
+      (d, i) => `translate(${scaleX(i)}, ${scaleY(d) + layout.indexOffset})`
+    )
     .attr("data-index", (_, i) => i);
 
-  gIndexes
+  indexGroups
     .append("text")
-    .attr("x", (barWidth - 5) / 2)
-    .attr("y", (d) => height - scaleY(d) - 35)
+    .attr("x", (layout.barWidth - layout.barPadding) / 2)
+    .attr("y", (d) => height - scaleY(d) - layout.labelOffset)
     .text((_, i) => i)
     .style("text-anchor", "middle")
     .style("font-size", "12px")
-    .style("fill", "darkOrange");
+    .style("fill", "darkorange");
 
-  const gEnter = groups
-    .enter()
-    .append("g")
+  // Bar groups
+  const barGroups = svg
+    .selectAll("g.bar-group")
+    .data(arr, (_, i) => i)
+    .join("g")
     .attr("class", "bar-group")
-    .attr("transform", (_, i) => `translate(${scaleX(i)},0)`)
+    .attr("transform", (_, i) => `translate(${scaleX(i)}, 0)`)
     .attr("data-index", (_, i) => i);
 
-  gEnter
+  barGroups
     .append("rect")
-    .attr("width", barWidth - 5)
+    .attr("width", layout.barWidth - layout.barPadding)
     .attr("height", (d) => scaleY(d))
-    .attr("y", (d) => height - scaleY(d) - 20)
-    .attr("x", 2.5)
+    .attr("y", (d) => height - scaleY(d) - layout.barYOffset)
+    .attr("x", layout.barPadding / 2)
     .style("fill", "steelblue")
     .style("stroke", "#333");
 
-  gEnter
+  barGroups
     .append("text")
-    .attr("x", (barWidth - 5) / 2)
-    .attr("y", (d) => height - scaleY(d) - 25)
+    .attr("x", (layout.barWidth - layout.barPadding) / 2)
+    .attr("y", (d) => height - scaleY(d) - layout.labelOffset)
     .text((d) => d)
     .style("text-anchor", "middle")
-    .style("fill", "#333")
     .style("font-size", "12px")
     .style("fill", "green");
 };
 
 // Swap two bars at indices i and j
-export const swap = (arr, i, j, svg, scaleX, pauseTime) => {
-  const barWidth = 50;
+export const swap = async (svg, i, j, scaleX, pauseTime = 300) => {
+  console.log(pauseTime);
+
   // swap data values
-  [arr[i], arr[j]] = [arr[j], arr[i]];
+  //[arr[i], arr[j]] = [arr[j], arr[i]]; //comment out for new solution
 
   // swap group wrappers' data-index and move them
   const gI = svg.select(`g.bar-group[data-index='${i}']`);
@@ -84,21 +94,46 @@ export const swap = (arr, i, j, svg, scaleX, pauseTime) => {
   gI.attr("data-index", j);
   gJ.attr("data-index", i);
 
-  gI.transition()
-    .duration(pauseTime)
-    .attr("transform", `translate(${scaleX(j)},0)`);
+  // Create Promises for both transitions
+  const t1 = new Promise((resolve) => {
+    gI.transition()
+      .duration(pauseTime)
+      .attr("transform", `translate(${scaleX(j)},0)`)
+      .on("end", resolve);
+  });
 
-  gJ.transition()
-    .duration(pauseTime)
-    .attr("transform", `translate(${scaleX(i)},0)`);
+  const t2 = new Promise((resolve) => {
+    gJ.transition()
+      .duration(pauseTime)
+      .attr("transform", `translate(${scaleX(i)},0)`)
+      .on("end", resolve);
+  });
+
+  // Wait for both transitions to complete
+  await Promise.all([t1, t2]);
 };
 
-export const highlight = (svg, color, ...i) => {
-  for (const index of i) {
-    const gI = svg.select(`g.bar-group[data-index='${index}'] rect`);
-    gI.style("fill", color);
-  }
-};
+export async function highlight(
+  svg,
+  indices,
+  color = "steelblue",
+  pauseTime = 300
+) {
+  console.log(pauseTime);
+  const promises = indices.map((i) => {
+    const rect = svg.select(`g.bar-group[data-index='${i}'] rect`);
+
+    return new Promise((resolve) => {
+      rect
+        .transition()
+        .duration(pauseTime)
+        .style("fill", color)
+        .on("end", resolve);
+    });
+  });
+
+  await Promise.all(promises);
+}
 
 export const pause = (ms) => {
   return new Promise((resolve) => setTimeout(resolve, ms));

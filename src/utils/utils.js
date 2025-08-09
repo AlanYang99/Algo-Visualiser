@@ -59,3 +59,16 @@ export const validateInput = (values) => {
 const getRandomInt = (max) => {
   return Math.floor(Math.random() * max);
 };
+
+export const getlastPathParameter = (path) => {
+  // Handle potential trailing slashes
+  let trimmedPath = path;
+  if (path.endsWith("/")) {
+    trimmedPath = path.slice(0, -1);
+  }
+  const lastSlashIndex = trimmedPath.lastIndexOf("/");
+  if (lastSlashIndex === -1) {
+    return trimmedPath; // No slashes, the whole path is the parameter
+  }
+  return trimmedPath.substring(lastSlashIndex + 1);
+};
