@@ -15,14 +15,16 @@ import { store } from "./store/sortSlice.js";
 import { ToastContainer } from "react-toastify";
 import Algorithm from "./components/Algorithm.jsx";
 import BubbleSortVisualizer from "./components/SortAlgorithms/BubbleSortVisualizer.jsx";
-import BubbleSort from "./components/algorithms/bubbleSort.jsx";
+import InsertionSortVisualizer from "./components/SortAlgorithms/InsertionSortVisualizer.jsx";
+import SelectionSortVisualizer from "./components/SortAlgorithms/SelectionSortVisualizer.jsx";
 
 const routeDefinitions = createRoutesFromElements(
   <Route path="/" element={<App />}>
     <Route index element={<HomePage />} />
     <Route element={<Algorithm />}>
-      <Route path="/sort/bubblesort" element={<BubbleSort />} />
-      <Route path="/sort/insertionsort" element={<BubbleSortVisualizer />} />
+      <Route path="/sort/bubblesort" element={<BubbleSortVisualizer />} />
+      <Route path="/sort/insertionsort" element={<InsertionSortVisualizer />} />
+      <Route path="/sort/selectionsort" element={<SelectionSortVisualizer />} />
     </Route>
     {/* <Route element={<Test />}></Route> */}
     {/* <Route path="/sort/bubblesort" element={<MainLayout />} />

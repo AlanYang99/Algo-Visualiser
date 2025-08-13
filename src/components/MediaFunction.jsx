@@ -5,30 +5,35 @@ import {
   faBackward,
   faForward,
   faPause,
+  faForwardFast,
+  faBackwardFast,
+  faForwardStep,
+  faBackwardStep,
 } from "@fortawesome/free-solid-svg-icons";
+import { useActions } from "./useActions";
 // import { useSortAnimation } from "./UseSortAnimation";
 import { useSelector } from "react-redux";
 import { selectData } from "../store/sortSelectors";
 import { bubbleSort } from "../utils/render";
 
 export default function MediaFunction() {
-  // const { pause } = useSortAnimation({
-  //   algorithm: bubbleSort,
-  //   data: useSelector(selectData),
-  //   onStep: (step) => {},
-  //   scaleX: null,
-  //   scaleY: null,
-  // });
+  const { backward, pause, play, forward, reset, complete } = useActions();
   return (
-    <div className="inline-block w-full text-center">
+    <div className="flex items-center justify-center h-full">
+      <FontAwesomeIcon icon={faBackwardFast} className="m-2" onClick={reset} />
       <FontAwesomeIcon
-        icon={faBackward}
+        icon={faBackwardStep}
         className="m-2"
-        onClick={() => console.log("hello")}
+        onClick={backward}
       />
-      <FontAwesomeIcon icon={faPlay} className="m-2" />
-      <FontAwesomeIcon icon={faForward} className="m-2" />
-      <FontAwesomeIcon icon={faPause} className="m-2" />
+      <FontAwesomeIcon icon={faPlay} className="m-2" onClick={play} />
+      <FontAwesomeIcon icon={faPause} className="m-2" onClick={pause} />
+      <FontAwesomeIcon icon={faForwardStep} className="m-2" onClick={forward} />
+      <FontAwesomeIcon
+        icon={faForwardFast}
+        className="m-2"
+        onClick={complete}
+      />
     </div>
   );
 }

@@ -26,7 +26,7 @@ const sortSlice = createSlice({
       state.currentStep = action.payload;
     },
     setSpeed(state, action) {
-      state.action = action.payload;
+      state.speed = action.payload;
     },
   },
 });

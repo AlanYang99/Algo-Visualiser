@@ -18,7 +18,7 @@ export const bubbleSort = (arr) => {
   return dataCopy;
 };
 
-export const render = (arr, height, scaleX, scaleY) => {
+export const render = (arr, height, scaleX, scaleY, colorMap = {}) => {
   const svg = d3.select("#animation");
   svg.selectAll("*").remove(); // Clear previous render
 
@@ -67,7 +67,7 @@ export const render = (arr, height, scaleX, scaleY) => {
     .attr("height", (d) => scaleY(d))
     .attr("y", (d) => height - scaleY(d) - layout.barYOffset)
     .attr("x", layout.barPadding / 2)
-    .style("fill", "steelblue")
+    .style("fill", (_, i) => colorMap[i] || "steelblue")
     .style("stroke", "#333");
 
   barGroups
@@ -82,8 +82,6 @@ export const render = (arr, height, scaleX, scaleY) => {
 
 // Swap two bars at indices i and j
 export const swap = async (svg, i, j, scaleX, pauseTime = 300) => {
-  console.log(pauseTime);
-
   // swap data values
   //[arr[i], arr[j]] = [arr[j], arr[i]]; //comment out for new solution
 
@@ -113,16 +111,10 @@ export const swap = async (svg, i, j, scaleX, pauseTime = 300) => {
   await Promise.all([t1, t2]);
 };
 
-export async function highlight(
-  svg,
-  indices,
-  color = "steelblue",
-  pauseTime = 300
-) {
-  console.log(pauseTime);
+export async function highlight(svg, indices, colorMap = {}, pauseTime = 300) {
   const promises = indices.map((i) => {
     const rect = svg.select(`g.bar-group[data-index='${i}'] rect`);
-
+    const color = i in colorMap ? colorMap[i] : "steelblue";
     return new Promise((resolve) => {
       rect
         .transition()

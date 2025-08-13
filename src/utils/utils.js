@@ -1,3 +1,5 @@
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   faSort,
   faProjectDiagram,
@@ -11,7 +13,7 @@ export const getSideBarNavigationItems = () => {
       label: "Sorting",
       topics: [
         { topic: "Bubble Sort", link: "sort/bubblesort" },
-        { topic: "Quick Sort", link: "sort/quicksort" },
+        { topic: "Insertion Sort", link: "sort/insertionsort" },
         { topic: "Merge Sort", link: "sort/mergesort" },
       ],
       icon: faSort,
@@ -20,7 +22,7 @@ export const getSideBarNavigationItems = () => {
       label: "Graphs",
       topics: [
         { topic: "Bubble Sort", link: "sort/bubblesort" },
-        { topic: "Quick Sort", link: "sort/quicksort" },
+        { topic: "Insertion Sort", link: "sort/insertionsort" },
         { topic: "Merge Sort", link: "sort/mergesort" },
       ],
       icon: faProjectDiagram,
@@ -72,3 +74,28 @@ export const getlastPathParameter = (path) => {
   }
   return trimmedPath.substring(lastSlashIndex + 1);
 };
+
+export const showToastIfNotActive = (id, message, options) => {
+  if (!toast.isActive(id)) {
+    toast(message, { toastId: id, ...options });
+  }
+};
+
+export const showErrorToastIfNotActive = (id, message, options) => {
+  if (!toast.isActive(id)) {
+    toast.error(message, { toastId: id, ...options });
+  }
+};
+
+// Example usage:
+// To prevent duplicate toasts for a specific message type,
+// assign a unique ID to each toast.
+showToastIfNotActive("my-unique-toast-id", "This is a new toast message!", {
+  position: "top-right",
+  autoClose: 5000,
+  hideProgressBar: false,
+  closeOnClick: true,
+  pauseOnHover: true,
+  draggable: true,
+  progress: undefined,
+});

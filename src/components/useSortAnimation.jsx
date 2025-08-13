@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setCurrentStep,
@@ -16,37 +16,46 @@ import {
 import { render } from "../utils/render";
 import { toast } from "react-toastify";
 
-export function useSortAnimation({ algorithm, data, onStep, scaleX, scaleY }) {
+export function useSortAnimation({
+  algorithm,
+  data,
+  onStep,
+  height,
+  scaleX,
+  scaleY,
+}) {
   const dispatch = useDispatch();
   const status = useSelector(selectStatus);
   const currentStep = useSelector(selectCurrentStep);
   const steps = useSelector(selectSteps);
   const speed = useSelector(selectSpeed);
 
+  const prevStepRef = useRef(currentStep);
+
   const validStatus = selectStatus === "paused" || selectStatus === "complete";
 
+  const allSteps = useMemo(() => algorithm([...data]), [algorithm, data]);
+
   useEffect(() => {
-    console.log("this should run first");
-    const allSteps = algorithm([...data]);
     dispatch(setData(data));
     dispatch(setSteps(allSteps));
-    console.log(steps);
-    console.log(steps.length);
-    render(data, 400, scaleX, scaleY);
-  }, [algorithm, data]);
+  }, [data, allSteps, dispatch]);
+
+  useEffect(() => {
+    if (status != "playing") {
+      render(data, height - 20, scaleX, scaleY);
+    }
+  }, [height, scaleX, scaleY, data]);
 
   const advanceStep = () => {
-    console.log(steps);
     const step = steps[currentStep];
     if (step) onStep?.(step);
-    if (currentStep + 1 < steps.length) {
-      dispatch(setCurrentStep(currentStep + 1));
-    } else {
-      dispatch(setStatus("complete"));
-    }
+    dispatch(setCurrentStep(currentStep + 1));
+    prevStepRef.current = currentStep + 1;
   };
 
   useEffect(() => {
+    const stepChanged = prevStepRef.current !== currentStep;
     if (status === "playing") {
       const timeout = setTimeout(() => {
         if (currentStep < steps.length) {
@@ -54,10 +63,23 @@ export function useSortAnimation({ algorithm, data, onStep, scaleX, scaleY }) {
         } else {
           dispatch(setStatus("complete"));
         }
-      }, speed); // Or use speed from Redux
+      }, speed);
       return () => clearTimeout(timeout);
     } else {
-      //Render as per the data
+      // console.log(prevStepRef.current);
+      // console.log(currentStep);
+      if (status === "paused" && stepChanged) {
+        console.log("paused element");
+        prevStepRef.current = currentStep;
+
+        render(
+          allSteps[currentStep - 1].array,
+          height - 20,
+          scaleX,
+          scaleY,
+          allSteps[currentStep - 1].colorMap
+        );
+      }
     }
   }, [status, currentStep]);
 

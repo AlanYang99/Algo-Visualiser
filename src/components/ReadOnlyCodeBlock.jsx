@@ -11,9 +11,13 @@ export default function ReadOnlyCodeBlock() {
   const currentStep = useSelector(selectCurrentStep);
   const steps = useSelector(selectSteps);
 
-  const lineIndex = steps.length === 0 ? 0 : steps[currentStep].line;
+  var lineIndex;
+  if (currentStep === 0) {
+    lineIndex = -1;
+  } else {
+    lineIndex = steps.length === 0 ? "..." : steps[currentStep - 1].line;
+  }
 
-  console.log(lineIndex);
   return (
     <div className="bg-gray-900 text-gray-100 p-4 pb-0 overflow-y-auto font-mono text-sm shadow-md whitespace-pre justify-self-end w-full max-h-[calc(33vh-124px)]">
       {lines.map((line, idx) => (

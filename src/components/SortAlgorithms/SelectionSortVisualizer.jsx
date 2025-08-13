@@ -3,15 +3,16 @@ import * as d3 from "d3";
 import { useSelector } from "react-redux";
 import { useResizeDetector } from "react-resize-detector";
 import { useSortAnimation } from "../UseSortAnimation";
-import { bubbleSort } from "../../utils/sortAlgorithms";
+import { bubbleSort, selectionsort } from "../../utils/sortAlgorithms";
 import { selectData } from "../../store/sortSelectors";
 import { highlight, swap } from "../../utils/render";
 import LegendBox from "../LegendBox";
 import DescriptionBox from "../DescriptionBox";
 
-export default function BubbleSortVisualizer() {
+export default function SelectionSortVisualizer() {
   const svgRef = useRef(null);
 
+  console.log("hello");
   const { ref, height, width } = useResizeDetector();
   const combinedRef = useCallback(
     (node) => {
@@ -40,20 +41,24 @@ export default function BubbleSortVisualizer() {
   }, [data, height]);
 
   const {} = useSortAnimation({
-    algorithm: bubbleSort,
+    algorithm: selectionsort,
     data: useSelector(selectData),
     onStep: (step) => {
       switch (step.type) {
+        case "set":
+          highlight(svg, step.indices, step.colorMap);
+          break;
         case "compare":
           highlight(svg, step.indices, step.colorMap);
           break;
         case "swap":
           swap(svg, step.indices[0], step.indices[1], scaleX);
-          break;
-        case "unmark":
           highlight(svg, step.indices, step.colorMap);
           break;
-        case "mark":
+        case "sort":
+          highlight(svg, step.indices, step.colorMap);
+          break;
+        case "unmark":
           highlight(svg, step.indices, step.colorMap);
           break;
       }
@@ -64,23 +69,25 @@ export default function BubbleSortVisualizer() {
   });
 
   const legendItems = [
-    { label: "Unsorted", color: "fill-blue-300" },
+    { label: "To be inserted", color: "fill-red-300" },
+    { label: "Unsorted section", color: "fill-blue-300" },
     { label: "In comparison", color: "fill-yellow-300" },
-    { label: "Sorted", color: "fill-green-400" },
+    { label: "Sorted section", color: "fill-green-400" },
   ];
 
   return (
     <>
       <svg ref={combinedRef} id="animation" className="w-full h-full z-0"></svg>
-      <LegendBox items={legendItems} />
-      <DescriptionBox id="description1">
-        Bubble Sort is an algorithm that sorts an array from the lowest value to
-        the highest value.
+      <LegendBox items={legendItems} height="h-17.5" width="w-32" />
+      <DescriptionBox id="description1" height="h-15">
+        Insertion sort is a simple sorting algorithm that works by iteratively
+        inserting each element of an unsorted list into its correct position in
+        a sorted portion of the list.
       </DescriptionBox>
-      <DescriptionBox id="description2" top="top-22" height="h-21">
-        The time complexity of Bubble Sort is typically O(n²) in the worst and
-        average cases, and O(n) in the best case when the array is already
-        sorted and an optimization for early termination is implemented.
+      <DescriptionBox id="description2" top="top-27" height="h-21">
+        Insertion sort has a worst and average time complexity of O(n^2) due to
+        repeated shifting of elements. Its best case is O(n) when the array is
+        already sorted. It’s efficient for small or nearly sorted datasets{" "}
       </DescriptionBox>
     </>
   );
